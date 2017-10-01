@@ -3,12 +3,9 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.fedy2.weather.data.unit.BarometricPressureState;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * State of the barometric pressure adapter: steady (0), rising (1), or falling (2). 
@@ -20,7 +17,6 @@ public class BarometricPressureStateAdapter extends	XmlAdapter<Integer, Barometr
 	private static final int FALLING = 2;
 	private static final int RISING = 1;
 	private static final int STEADY = 0;
-	private Logger logger = LoggerFactory.getLogger(BarometricPressureStateAdapter.class);
 	
 	/**
 	 * {@inheritDoc}
@@ -32,7 +28,6 @@ public class BarometricPressureStateAdapter extends	XmlAdapter<Integer, Barometr
 			case RISING: return BarometricPressureState.RISING;
 			case FALLING: return BarometricPressureState.FALLING;
 		}
-		logger.warn("Unknown barometric pressure state \""+v+"\"");
 		return null;
 	}
 
