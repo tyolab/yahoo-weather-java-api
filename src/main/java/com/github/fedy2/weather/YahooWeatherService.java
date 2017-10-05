@@ -3,6 +3,11 @@
  */
 package com.github.fedy2.weather;
 
+import com.github.fedy2.weather.binding.RSSParser;
+import com.github.fedy2.weather.data.Channel;
+import com.github.fedy2.weather.data.Rss;
+import com.github.fedy2.weather.data.unit.DegreeUnit;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,14 +22,6 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.fedy2.weather.binding.RSSParser;
-import com.github.fedy2.weather.data.Channel;
-import com.github.fedy2.weather.data.Rss;
-import com.github.fedy2.weather.data.unit.DegreeUnit;
 
 /**
  * Main access point for the Yahoo weather service.
@@ -65,7 +62,7 @@ public class YahooWeatherService {
 		List<Channel> all() throws JAXBException, IOException;
 	}
 
-	private Logger logger = LoggerFactory.getLogger(YahooWeatherService.class);
+	// private Logger logger = LoggerFactory.getLogger(YahooWeatherService.class);
 	private RSSParser parser;
 	private Proxy proxy;
 
@@ -137,7 +134,7 @@ public class YahooWeatherService {
 	 */
 	private String composeUrl(String query)
 	{
-		logger.trace("query: {}", query);
+		// logger.trace("query: {}", query);
 		StringBuilder url = new StringBuilder(WEATHER_SERVICE_BASE_URL);
 		try {
 			url.append("?q=").append(URLEncoder.encode(query, "UTF-8"));
