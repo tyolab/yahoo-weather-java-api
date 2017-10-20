@@ -3,12 +3,9 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.fedy2.weather.data.unit.WeekDay;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author "Federico De Faveri defaveri@gmail.com"
@@ -16,7 +13,7 @@ import com.github.fedy2.weather.data.unit.WeekDay;
  */
 public class WeekDayAdapter extends XmlAdapter<String, WeekDay> {
 	
-	private Logger logger = LoggerFactory.getLogger(WeekDayAdapter.class);
+	// private Logger logger = LoggerFactory.getLogger(WeekDayAdapter.class);
 
 	@Override
 	public WeekDay unmarshal(String v) throws Exception {
@@ -24,7 +21,7 @@ public class WeekDayAdapter extends XmlAdapter<String, WeekDay> {
 			return WeekDay.valueOf(v.toUpperCase());
 		} catch (Exception e)
 		{
-			logger.warn("Unknow week day \"{}\"", v);
+			// logger.warn("Unknow week day \"{}\"", v);
 		}
 		return null;
 	}

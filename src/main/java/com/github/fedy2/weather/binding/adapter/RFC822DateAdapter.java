@@ -3,13 +3,11 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author "Federico De Faveri defaveri@gmail.com"
@@ -28,7 +26,7 @@ public class RFC822DateAdapter extends XmlAdapter<String, Date> {
             //exception to RFC 822 format used by Yahoo "Thu, 22 Dec 2011 01:50 pm CET"
             new SimpleDateFormat("EEE, d MMM yyyy hh:mm a z", Locale.US)};
 
-	private Logger logger = LoggerFactory.getLogger(RFC822DateAdapter.class);
+	// private Logger logger = LoggerFactory.getLogger(RFC822DateAdapter.class);
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US);
 
@@ -52,7 +50,7 @@ public class RFC822DateAdapter extends XmlAdapter<String, Date> {
             } catch (Exception e) {
             }//skipping exception
         }
-        logger.warn("Unknown date format \"{}\"", v);
+        // logger.warn("Unknown date format \"{}\"", v);
         return null;
     }
 

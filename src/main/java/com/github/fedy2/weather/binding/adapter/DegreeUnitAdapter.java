@@ -3,12 +3,9 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.fedy2.weather.data.unit.DegreeUnit;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Degree unit adapter: f for Fahrenheit or c for Celsius (character)
@@ -19,7 +16,7 @@ public class DegreeUnitAdapter extends XmlAdapter<String, DegreeUnit> {
 	private static final String CELSIUS = "c";
 	private static final String FAHRENHEIT = "f";
 	
-	private Logger logger = LoggerFactory.getLogger(DegreeUnitAdapter.class);
+	// private Logger logger = LoggerFactory.getLogger(DegreeUnitAdapter.class);
 
 	/**
 	 * {@inheritDoc}
@@ -28,7 +25,7 @@ public class DegreeUnitAdapter extends XmlAdapter<String, DegreeUnit> {
 	public DegreeUnit unmarshal(String v) throws Exception {
 		if (FAHRENHEIT.equalsIgnoreCase(v)) return DegreeUnit.FAHRENHEIT;
 		if (CELSIUS.equalsIgnoreCase(v)) return DegreeUnit.CELSIUS;
-		logger.warn("Unknown degree unit \"{}\"", v);		
+		// logger.warn("Unknown degree unit \"{}\"", v);
 		return null;
 	}
 

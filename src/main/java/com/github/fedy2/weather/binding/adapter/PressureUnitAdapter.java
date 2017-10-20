@@ -3,12 +3,9 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.fedy2.weather.data.unit.PressureUnit;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Units of barometric pressure adapter, in for pounds per square inch or mb for millibars.
@@ -20,7 +17,7 @@ public class PressureUnitAdapter extends XmlAdapter<String, PressureUnit> {
 	private static final String MB = "mb";
 	private static final String IN = "in";
 	
-	private Logger logger = LoggerFactory.getLogger(PressureUnitAdapter.class);
+	// private Logger logger = LoggerFactory.getLogger(PressureUnitAdapter.class);
 
 	/**
 	 * {@inheritDoc}
@@ -29,7 +26,7 @@ public class PressureUnitAdapter extends XmlAdapter<String, PressureUnit> {
 	public PressureUnit unmarshal(String v) throws Exception {
 		if (IN.equalsIgnoreCase(v)) return PressureUnit.IN;
 		if (MB.equalsIgnoreCase(v)) return PressureUnit.MB;
-		logger.warn("Unknown pressure unit \"{}\"", v);
+		// logger.warn("Unknown pressure unit \"{}\"", v);
 		return null;
 	}
 

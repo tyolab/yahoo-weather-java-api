@@ -3,16 +3,13 @@
  */
 package com.github.fedy2.weather.binding.adapter;
 
+import com.github.fedy2.weather.data.unit.Time;
+import com.github.fedy2.weather.data.unit.TimeConvention;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.fedy2.weather.data.unit.Time;
-import com.github.fedy2.weather.data.unit.TimeConvention;
 
 /**
  * The time is a string in a local time format of "h:mm am/pm", for example "7:02 am" (string)
@@ -24,7 +21,7 @@ public class TimeAdapter extends XmlAdapter<String, Time> {
 	private static final String TIME_PATTERN = "(\\d?\\d):(\\d?\\d)\\s(am|pm)";
 	private static final Pattern PATTERN = Pattern.compile(TIME_PATTERN);
 
-	private Logger logger = LoggerFactory.getLogger(TimeAdapter.class);
+	// private Logger logger = LoggerFactory.getLogger(TimeAdapter.class);
 
 	/**
 	 * {@inheritDoc}
@@ -49,11 +46,11 @@ public class TimeAdapter extends XmlAdapter<String, Time> {
 					return new Time(hours, minutes, convention);
 				} catch(NumberFormatException nfe)
 				{
-					logger.warn("Error converting time value "+v, nfe);
+					// logger.warn("Error converting time value "+v, nfe);
 				}
 			}
 		}
-		logger.warn("Unparsable time value \"{}\"", v);
+		// logger.warn("Unparsable time value \"{}\"", v);
 		return null;
 	}
 

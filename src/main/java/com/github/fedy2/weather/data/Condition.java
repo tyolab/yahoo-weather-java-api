@@ -3,13 +3,8 @@
  */
 package com.github.fedy2.weather.data;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.github.fedy2.weather.binding.adapter.RFC822DateAdapter;
 
 /**
  * Weather conditions.
@@ -39,9 +34,9 @@ public class Condition {
 	/**
 	 * The current date and time for which this forecast applies.
 	 */
-	@XmlAttribute
-	@XmlJavaTypeAdapter(RFC822DateAdapter.class)
-	private Date date;
+//	@XmlAttribute
+//	@XmlJavaTypeAdapter(RFC822DateAdapter.class)
+	private String date;
 
 	public Condition()
 	{}
@@ -52,7 +47,7 @@ public class Condition {
 	 * @param temp
 	 * @param date
 	 */
-	public Condition(String text, int code, int temp, Date date) {
+	public Condition(String text, int code, int temp, String date) {
 		this.text = text;
 		this.code = code;
 		this.temp = temp;
@@ -87,7 +82,7 @@ public class Condition {
 	 * Returns the current date and time for which this forecast applies.
 	 * @return the date
 	 */
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 

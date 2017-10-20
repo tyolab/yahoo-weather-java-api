@@ -3,11 +3,11 @@
  */
 package com.github.fedy2.weather;
 
+import com.github.fedy2.weather.data.unit.DegreeUnit;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.github.fedy2.weather.data.unit.DegreeUnit;
 
 /**
  * An helper for query building.
@@ -58,7 +58,7 @@ public class QueryBuilder {
 	}
 	
 	public String build() {
-		StringBuilder query = new StringBuilder("SELECT * FROM weather.forecast WHERE ");
+		StringBuilder query = new StringBuilder("SELECT item.condition FROM weather.forecast WHERE ");
 		query.append(woeidCondition).append(" ");
 		if (unitCondition!=null) query.append("AND ").append(unitCondition).append(" ");
 		

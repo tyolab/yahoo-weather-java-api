@@ -3,35 +3,34 @@
  */
 package com.github.fedy2.weather;
 
-import com.github.fedy2.weather.binding.RSSParser;
+import com.github.fedy2.weather.binding.JsonParser;
+import com.github.fedy2.weather.binding.Parser;
 import com.github.fedy2.weather.data.Channel;
-import com.github.fedy2.weather.data.Rss;
 import com.github.fedy2.weather.data.unit.DegreeUnit;
 
+import org.arbonaut.xml.bind.JAXBException;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.List;
 
-import javax.xml.bind.JAXBException;
+import au.com.tyo.services.HttpPool;
+
+import static com.github.fedy2.weather.YahooWeatherService.ResultFormat.JSON;
 
 /**
  * Main access point for the Yahoo weather service.
- * @author "Federico De Faveri defaveri@gmail.com"
+ * original @author "Federico De Faveri defaveri@gmail.com"
  */
 public class YahooWeatherService {
 
 	private static final String WEATHER_SERVICE_BASE_URL = "https://query.yahooapis.com/v1/public/yql";
 
 	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+	public enum ResultFormat {RSS, JSON};
 
 	public interface LimitDeclaration {
 
@@ -42,7 +41,7 @@ public class YahooWeatherService {
 		 * @throws JAXBException if an error occurs parsing the response.
 		 * @throws IOException if an error occurs communicating with the service.
 		 */
-		List<Channel> first(int count) throws JAXBException, IOException;
+		Object first(int count) throws Exception;
 		
 		/**
 		 * Limits results to last <code>count</code> {@link Channel}s.
@@ -51,7 +50,7 @@ public class YahooWeatherService {
 		 * @throws JAXBException if an error occurs parsing the response.
 		 * @throws IOException if an error occurs communicating with the service.
 		 */
-		List<Channel> last(int count) throws JAXBException, IOException;
+		Object last(int count) throws Exception;
 		
 		/**
 		 * Returns all the results with no limits.
@@ -59,24 +58,28 @@ public class YahooWeatherService {
 		 * @throws JAXBException if an error occurs parsing the response.
 		 * @throws IOException if an error occurs communicating with the service.
 		 */
-		List<Channel> all() throws JAXBException, IOException;
+		Object all() throws Exception;
 	}
 
 	// private Logger logger = LoggerFactory.getLogger(YahooWeatherService.class);
-	private RSSParser parser;
-	private Proxy proxy;
+	private Parser parser;
+	// private Proxy proxy;
+	private ResultFormat format;
 
-	public YahooWeatherService() throws JAXBException
+	public YahooWeatherService(ResultFormat format)
 	{
-		this.parser = new RSSParser();
-		this.proxy = Proxy.NO_PROXY;
+		this.format = format;
+
+		if (format == JSON)
+			this.parser = new JsonParser();
+		// this.proxy = Proxy.NO_PROXY;
 	}
 
-	public YahooWeatherService(Proxy proxy) throws JAXBException
-	{
-		this.parser = new RSSParser();
-		this.proxy = proxy;
-	}
+//	public YahooWeatherService(Parser parser, Proxy proxy)
+//	{
+//		this.parser = parser;
+//		// this.proxy = proxy;
+//	}
 
 	/**
 	 * Gets the Weather RSS feed.
@@ -86,13 +89,13 @@ public class YahooWeatherService {
 	 * @throws JAXBException if an error occurs parsing the response.
 	 * @throws IOException if an error occurs communicating with the service.
 	 */
-	public Channel getForecast(String woeid, DegreeUnit unit) throws JAXBException, IOException
+	public Object getForecast(String woeid, DegreeUnit unit) throws Exception
 	{
 		QueryBuilder query = new QueryBuilder();
 		query.woeid(woeid).unit(unit);
-		List<Channel> channels = execute(query.build());
-		if (channels.isEmpty()) throw new IllegalStateException("No results from the service.");
-		return channels.get(0);
+		Object channels = execute(query.build());
+		// if (channels.isEmpty()) throw new IllegalStateException("No results from the service.");
+		return channels;
 	}
 
 	/**
@@ -109,19 +112,19 @@ public class YahooWeatherService {
 		return new LimitDeclaration() {
 
 			@Override
-			public List<Channel> last(int count) throws JAXBException, IOException {
+			public Object last(int count) throws Exception {
 				query.last(count);
 				return execute(query.build());
 			}
 
 			@Override
-			public List<Channel> first(int count) throws JAXBException, IOException {
+			public Object first(int count) throws Exception {
 				query.first(count);
 				return execute(query.build());
 			}
 
 			@Override
-			public List<Channel> all() throws JAXBException, IOException {
+			public Object all() throws Exception {
 				return execute(query.build());
 			}
 		};
@@ -138,17 +141,23 @@ public class YahooWeatherService {
 		StringBuilder url = new StringBuilder(WEATHER_SERVICE_BASE_URL);
 		try {
 			url.append("?q=").append(URLEncoder.encode(query, "UTF-8"));
+			if (format == JSON)
+				url.append("&format=json");
+
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Url encoding failed", e);
 		}
 		return url.toString();
 	}
 
-	private List<Channel> execute(String query) throws IOException, JAXBException {
+	private Object execute(String query) throws Exception {
 		String url = composeUrl(query);
-		String xml = retrieveRSS(url);
-		Rss rss = parser.parse(xml);
-		return rss.getChannels();
+
+		String result = retrieve(url);
+
+		if (null != parser)
+			return parser.parse(result);
+		return result;
 	}
 
 	/**
@@ -157,18 +166,9 @@ public class YahooWeatherService {
 	 * @return the service response.
 	 * @throws IOException if an error occurs during the connection.
 	 */
-	private String retrieveRSS(String serviceUrl) throws IOException
+	private String retrieve(String serviceUrl) throws Exception
 	{
-		URL url = new URL(serviceUrl);
-		URLConnection connection = url.openConnection(proxy);
-		InputStream is = connection.getInputStream();
-		InputStreamReader reader = new InputStreamReader(is);
-		StringWriter writer = new StringWriter();
-		copy(reader, writer);
-		reader.close();
-		is.close();
-
-		return writer.toString();
+		return HttpPool.getConnection().get(serviceUrl);
 	}
 
 	/**
